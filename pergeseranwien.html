@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulasi Pergeseran Wien</title>
+  <style>
+    body {
+      background: #222;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    canvas {
+      background: #111;
+      border-radius: 8px;
+      margin: 20px auto;
+      display: block;
+      box-shadow: 0 0 10px #000;
+    }
+    #controls {
+      max-width: 600px;
+      margin: 0 auto 20px auto;
+      background: #333;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px #000;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 10px;
+    }
+    input[type=range] {
+      width: 100%;
+    }
+    .formula {
+      margin-top: 15px;
+      font-size: 18px;
+      color: #7cff7c;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulasi Hukum Pergeseran Wien</h1>
+  <div id="controls">
+    <label for="tempRange">Suhu Benda Hitam (T) = <span id="tempValue">3000</span> K</label>
+    <input type="range" id="tempRange" min="1000" max="10000" value="3000" step="100" />
+    <div class="formula" id="wienFormula">λ_max = b / T = 2.897×10⁻³ / T</div>
+  </div>
+
+  <canvas id="spectrumCanvas" width="700" height="350"></canvas>
+
+  <script>
+    const canvas = document.getElementById('spectrumCanvas');
+    const ctx = canvas.getContext('2d');
+    const tempRange = document.getElementById('tempRange');
+    const tempValue = document.getElementById('tempValue');
+    const wienFormula = document.getElementById('wienFormula');
+
+    const b = 2.897e-3; // konstanta Wien (m·K)
+
+    // Panjang gelombang dari 100 nm (1e-7 m) sampai 3000 nm (3e-6 m)
+    const lambdaMin = 100e-9;
+    const lambdaMax = 3000e-9;
+
+    function planck(wavelength, T) {
+      // Rumus intensitas Planck (disederhanakan, skala relatif)
+      // I(λ,T) = (2hc^2/λ^5) * 1/(exp(hc/(λkT))-1)
+      // h = Planck, c = cahaya, k = Boltzmann constant
+      // Untuk simulasi kita buat normalisasi supaya gampang digambar
+
+      const h = 6.626e-34;
+      const c = 3e8;
+      const k = 1.38e-23;
+
+      const numerator = 2 * h * c * c;
+      const denominatorExp = Math.exp((h * c) / (wavelength * k * T)) - 1;
+      const intensity = numerator / (Math.pow(wavelength, 5) * denominatorExp);
+
+      return intensity;
+    }
+
+    function drawSpectrum(T) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Axis
+      ctx.strokeStyle = '#7cff7c';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(50, 300);
+      ctx.lineTo(650, 300); // x-axis
+      ctx.moveTo(50, 50);
+      ctx.lineTo(50, 300); // y-axis
+      ctx.stroke();
+
+      ctx.fillStyle = '#7cff7c';
+      ctx.font = '14px Arial';
+      ctx.fillText('Intensitas', 10, 40);
+      ctx.fillText('Panjang Gelombang (nm)', 550, 320);
+
+      // Draw curve
+      ctx.strokeStyle = '#ffaa00';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      // Find max intensity to normalize curve
+      let maxIntensity = 0;
+      for(let l = lambdaMin; l <= lambdaMax; l += 1e-9) {
+        let I = planck(l, T);
+        if(I > maxIntensity) maxIntensity = I;
+      }
+
+      for(let l = lambdaMin; l <= lambdaMax; l += 1e-9) {
+        let I = planck(l, T);
+        let x = 50 + ((l - lambdaMin) / (lambdaMax - lambdaMin)) * 600;
+        let y = 300 - (I / maxIntensity) * 240;
+        if(l === lambdaMin) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Draw vertical line at λ_max = b / T
+      const lambdaMaxPeak = b / T; // in meters
+      const lambdaMaxPeakNm = lambdaMaxPeak * 1e9;
+
+      const xPeak = 50 + ((lambdaMaxPeak - lambdaMin) / (lambdaMax - lambdaMin)) * 600;
+
+      ctx.strokeStyle = '#00ffcc';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(xPeak, 50);
+      ctx.lineTo(xPeak, 300);
+      ctx.stroke();
+
+      // Label λ_max
+      ctx.fillStyle = '#00ffcc';
+      ctx.font = '16px Arial';
+      ctx.fillText(`λ_max = ${lambdaMaxPeakNm.toFixed(1)} nm`, xPeak + 10, 70);
+    }
+
+    tempRange.addEventListener('input', () => {
+      const T = parseInt(tempRange.value);
+      tempValue.textContent = T;
+      wienFormula.textContent = `λ_max = b / T = 2.897×10⁻³ / ${T} = ${(2.897e-3 / T).toExponential(3)} m`;
+      drawSpectrum(T);
+    });
+
+    // Initial draw
+    drawSpectrum(parseInt(tempRange.value));
+  </script>
+</body>
+</html>

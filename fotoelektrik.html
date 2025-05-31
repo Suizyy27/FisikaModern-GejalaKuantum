@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulasi Efek Fotolistrik</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    canvas {
+      background: #222;
+      display: block;
+      margin: 20px auto;
+      border: 3px solid #444;
+      border-radius: 10px;
+    }
+    #controls {
+      margin-bottom: 10px;
+    }
+    label {
+      margin: 0 10px;
+    }
+    #score {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulasi Efek Fotolistrik</h1>
+
+  <div id="controls">
+    <label>Frekuensi Cahaya:
+      <input type="range" id="freqSlider" min="1" max="10" step="0.1" value="5" />
+      <span id="freqLabel">5</span> THz
+    </label>
+  </div>
+
+  <div id="score">Elektron terpancar: <span id="electronCount">0</span></div>
+
+  <canvas id="photoCanvas" width="800" height="400"></canvas>
+  <canvas id="graphCanvas" width="800" height="200"></canvas>
+
+  <audio id="pingSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+  <script>
+    const photoCanvas = document.getElementById('photoCanvas');
+    const ctx = photoCanvas.getContext('2d');
+    const graphCanvas = document.getElementById('graphCanvas');
+    const gtx = graphCanvas.getContext('2d');
+
+    const freqSlider = document.getElementById('freqSlider');
+    const freqLabel = document.getElementById('freqLabel');
+    const electronCountEl = document.getElementById('electronCount');
+    const sound = document.getElementById('pingSound');
+
+    const threshold = 5; // Frekuensi ambang
+    let photons = [];
+    let electrons = [];
+    let electronCount = 0;
+
+    class Photon {
+      constructor(freq) {
+        this.x = 0;
+        this.y = 150 + Math.random() * 100;
+        this.speed = 3;
+        this.freq = freq;
+        this.energy = freq - threshold;
+        this.color = "yellow";
+        this.triggered = false;
+      }
+      update() {
+        this.x += this.speed;
+        if (this.x > 400 && !this.triggered) {
+          this.triggered = true;
+          if (this.freq >= threshold) {
+            electrons.push(new Electron(this.energy));
+            playEffect();
+            electronCount++;
+            electronCountEl.textContent = electronCount;
+            plotData(this.freq, this.energy);
+          }
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    class Electron {
+      constructor(energy) {
+        this.x = 400;
+        this.y = 250;
+        this.vx = 2 + energy * 2;
+        this.color = "cyan";
+      }
+      update() {
+        this.x += this.vx;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function drawMetal() {
+      ctx.fillStyle = "#888";
+      ctx.fillRect(400, 200, 20, 100);
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, photoCanvas.width, photoCanvas.height);
+      drawMetal();
+
+      photons.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      electrons.forEach(e => {
+        e.update();
+        e.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    function plotAxes() {
+      gtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+      gtx.strokeStyle = "#000";
+      gtx.beginPath();
+      gtx.moveTo(40, 10);
+      gtx.lineTo(40, 180); // y-axis
+      gtx.lineTo(790, 180); // x-axis
+      gtx.stroke();
+      gtx.fillText("Energi Kinetik", 5, 20);
+      gtx.fillText("Frekuensi", 720, 195);
+    }
+
+    function plotData(freq, energy) {
+      const x = 40 + freq * 70;
+      const y = 180 - energy * 30;
+      gtx.beginPath();
+      gtx.arc(x, y, 4, 0, 2 * Math.PI);
+      gtx.fillStyle = "red";
+      gtx.fill();
+    }
+
+    function playEffect() {
+      // mainkan suara
+      sound.currentTime = 0;
+      sound.play();
+      // kilatan cahaya
+      photoCanvas.style.boxShadow = "0 0 20px 5px yellow";
+      setTimeout(() => {
+        photoCanvas.style.boxShadow = "none";
+      }, 100);
+    }
+
+    freqSlider.addEventListener("input", () => {
+      freqLabel.textContent = freqSlider.value;
+    });
+
+    setInterval(() => {
+      const freq = parseFloat(freqSlider.value);
+      photons.push(new Photon(freq));
+    }, 500);
+
+    plotAxes();
+    animate();
+  </script>
+</body>
+</html>

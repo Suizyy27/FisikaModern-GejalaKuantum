@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drag & Drop: Gejala Kuantum</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .item, .dropzone {
+      width: 45%;
+      min-height: 60px;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #fff;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+    }
+
+    .item {
+      cursor: grab;
+      background-color: #dff0ff;
+    }
+
+    .dropzone.hovered {
+      background-color: #cceeff;
+      border-color: #007acc;
+    }
+
+    .success {
+      border: 2px solid green;
+      background-color: #e0ffe0;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      border: none;
+      background-color: #007acc;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Drag & Drop: Cocokkan Konsep!</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="materi.html">Materi</a></li>
+        <li><a href="kuis.html">Kuis</a></li>
+        <li><a href="latihan.html">Latihan</a></li>
+        <li><a href="game.html">Game</a></li>
+        <li><a href="forum.html">Forum</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <p>Tarik istilah di sebelah kiri ke penjelasan yang sesuai di sebelah kanan.</p>
+    <div class="container">
+      <div class="item" draggable="true" id="foton">Foton</div>
+      <div class="item" draggable="true" id="sinarx">Sinar-X</div>
+      <div class="item" draggable="true" id="efekfoto">Efek Fotolistrik</div>
+
+      <div class="dropzone" data-correct="foton">Partikel cahaya bermassa nol yang membawa energi</div>
+      <div class="dropzone" data-correct="sinarx">Gelombang elektromagnetik yang digunakan untuk radiografi</div>
+      <div class="dropzone" data-correct="efekfoto">Elektron keluar dari logam saat terkena cahaya</div>
+    </div>
+
+    <button onclick="cekHasil()">Cek Jawaban</button>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 | Fisika Modern - Pembelajaran Interaktif</p>
+  </footer>
+
+  <script>
+    const items = document.querySelectorAll('.item');
+    const dropzones = document.querySelectorAll('.dropzone');
+    let draggedItem = null;
+
+    items.forEach(item => {
+      item.addEventListener('dragstart', () => {
+        draggedItem = item;
+      });
+    });
+
+    dropzones.forEach(zone => {
+      zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zone.classList.add('hovered');
+      });
+
+      zone.addEventListener('dragleave', () => {
+        zone.classList.remove('hovered');
+      });
+
+      zone.addEventListener('drop', () => {
+        zone.classList.remove('hovered');
+        if (draggedItem) {
+          zone.innerHTML = '';
+          zone.appendChild(draggedItem);
+        }
+      });
+    });
+
+    function cekHasil() {
+      dropzones.forEach(zone => {
+        const correctId = zone.dataset.correct;
+        const itemInside = zone.querySelector('.item');
+        if (itemInside && itemInside.id === correctId) {
+          zone.classList.add('success');
+        } else {
+          zone.classList.remove('success');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

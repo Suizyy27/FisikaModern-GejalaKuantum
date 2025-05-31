@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulasi Efek Compton Lengkap</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 20px;
+      text-align: center;
+    }
+    canvas {
+      background: #222;
+      border-radius: 10px;
+      display: block;
+      margin: 20px auto;
+      box-shadow: 0 0 15px #000;
+    }
+    #controls {
+      margin: 15px auto;
+      max-width: 600px;
+      text-align: left;
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    select, input[type=range] {
+      width: 100%;
+      margin-top: 5px;
+      margin-bottom: 15px;
+    }
+    .formula {
+      color: #7cff7c;
+      font-size: 18px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulasi Efek Compton Lengkap</h1>
+  <p>Foton bertumbukan dengan partikel target (elektron/proton), mengubah arah dan panjang gelombangnya.</p>
+
+  <div id="controls">
+    <label for="targetSelect">
+      Pilih Target Partikel:
+      <select id="targetSelect">
+        <option value="electron" selected>Elektron (m = 9.11×10⁻³¹ kg)</option>
+        <option value="proton">Proton (m = 1.67×10⁻²⁷ kg)</option>
+      </select>
+    </label>
+
+    <label for="wavelengthSlider">
+      Panjang Gelombang Awal Foton λ (pm):
+      <input type="range" id="wavelengthSlider" min="10" max="1000" value="500" step="10" />
+      <span id="wavelengthValue">500</span> pm
+    </label>
+
+    <label for="angleSlider">
+      Sudut Hamburan (θ):
+      <input type="range" id="angleSlider" min="0" max="180" value="90" />
+      <span id="angleValue">90</span>°
+    </label>
+
+    <div class="formula" id="formulaBox"></div>
+  </div>
+
+  <canvas id="simCanvas" width="800" height="400"></canvas>
+  <canvas id="chartCanvas" width="600" height="200"></canvas>
+
+  <audio id="sound" src="click.mp3" preload="auto"></audio>
+
+  <script>
+    // CONSTANTS
+    const h = 6.626e-34; // Planck constant (Js)
+    const c = 3e8; // speed of light (m/s)
+    const me = 9.11e-31; // electron mass (kg)
+    const mp = 1.67e-27; // proton mass (kg)
+
+    // DOM Elements
+    const targetSelect = document.getElementById('targetSelect');
+    const wavelengthSlider = document.getElementById('wavelengthSlider');
+    const wavelengthValue = document.getElementById('wavelengthValue');
+    const angleSlider = document.getElementById('angleSlider');
+    const angleValue = document.getElementById('angleValue');
+    const formulaBox = document.getElementById('formulaBox');
+    const simCanvas = document.getElementById('simCanvas');
+    const chartCanvas = document.getElementById('chartCanvas');
+    const sound = document.getElementById('sound');
+
+    const ctx = simCanvas.getContext('2d');
+    const chartCtx = chartCanvas.getContext('2d');
+
+    // Variables
+    let angleDeg = parseInt(angleSlider.value);
+    let wavelengthPm = parseInt(wavelengthSlider.value);
+    let targetMass = me;
+
+    // Audio played flag
+    let soundPlayed = false;
+
+    // Photon & Electron Classes
+    class Photon {
+      constructor() {
+        this.x = 50;
+        this.y = 200;
+        this.r = 6;
+        this.speed = 4;
+        this.scattered = false;
+        this.angle = 0;
+      }
+      update() {
+        if (!this.scattered && this.x >= 400) {
+          this.scattered = true;
+          this.angle = angleDeg * Math.PI / 180;
+          electron.vx = 3 * Math.cos(this.angle);
+          electron.vy = 3 * Math.sin(this.angle);
+          if(!soundPlayed) {
+            sound.play();
+            soundPlayed = true;
+          }
+        }
+        if (!this.scattered) {
+          this.x += this.speed;
+        } else {
+          this.x += this.speed * Math.cos(this.angle);
+          this.y -= this.speed * Math.sin(this.angle);
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+        ctx.fillStyle = this.scattered ? "orange" : "yellow";
+        ctx.fill();
+        // Momentum arrow
+        ctx.strokeStyle = "yellow";
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        const dx = this.scattered ? 30 * Math.cos(this.angle) : 30;
+        const dy = this.scattered ? -30 * Math.sin(this.angle) : 0;
+        ctx.lineTo(this.x + dx, this.y + dy);
+        ctx.stroke();
+      }
+    }
+
+    class Electron {
+      constructor() {
+        this.x = 400;
+        this.y = 200;
+        this.r = 8;
+        this.vx = 0;
+        this.vy = 0;
+      }
+      update() {
+        this.x += this.vx;
+        this.y -= this.vy;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+        ctx.fillStyle = "cyan";
+        ctx.fill();
+        // Momentum arrow
+        ctx.strokeStyle = "cyan";
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x + this.vx * 10, this.y - this.vy * 10);
+        ctx.stroke();
+      }
+    }
+
+    let photon = new Photon();
+    let electron = new Electron();
+
+    function reset() {
+      photon = new Photon();
+      electron = new Electron();
+      soundPlayed = false;
+    }
+
+    function updateFormula() {
+      const theta = angleDeg * Math.PI / 180;
+      const lambda0 = wavelengthPm * 1e-12; // convert pm to m
+      const deltaLambda = (h / (targetMass * c)) * (1 - Math.cos(theta));
+      const lambdaPrime = lambda0 + deltaLambda;
+
+      formulaBox.innerHTML = `
+        λ = ${lambda0.toExponential(3)} m<br>
+        Δλ = λ' - λ = (h/mc)(1 - cosθ) = <span style="color:#7cff7c;">${deltaLambda.toExponential(3)} m</span><br>
+        λ' = λ + Δλ = <span style="color:#7cff7c;">${lambdaPrime.toExponential(3)} m</span>
+      `;
+    }
+
+    function drawScene() {
+      ctx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+
+      // Draw stationary target
+      ctx.fillStyle = "#555";
+      ctx.beginPath();
+      ctx.arc(400, 200, 10, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.fillText(
+        targetSelect.value.charAt(0).toUpperCase() + targetSelect.value.slice(1),
+        410,
+        190
+      );
+
+      photon.update();
+      electron.update();
+
+      photon.draw();
+      electron.draw();
+
+      requestAnimationFrame(drawScene);
+    }
+
+    function drawGraph() {
+      chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+      chartCtx.fillStyle = "#fff";
+      chartCtx.font = "14px Arial";
+      chartCtx.fillText("Δλ vs Sudut θ (0°-180°)", 10, 20);
+      chartCtx.strokeStyle = "#7cff7c";
+      chartCtx.lineWidth = 2;
+      chartCtx.beginPath();
+
+      for (let θ = 0; θ <= 180; θ++) {
+        const rad = θ * Math.PI / 180;
+        const deltaLambda = (h / (targetMass * c)) * (1 - Math.cos(rad));
+        const px = (θ / 180) * chartCanvas.width;
+        // Skala vertikal agar deltaLambda pas dalam canvas (max deltaLambda ~ 4.85e-12)
+        const py = chartCanvas.height - (deltaLambda / (5e-12)) * chartCanvas.height;
+
+        if (θ === 0) chartCtx.moveTo(px, py);
+        else chartCtx.lineTo(px, py);
+      }
+      chartCtx.stroke();
+
+      // Axis
+      chartCtx.strokeStyle = "#888";
+      chartCtx.lineWidth = 1;
+      chartCtx.beginPath();
+      // Horizontal axis
+      chartCtx.moveTo(0, chartCanvas.height);
+      chartCtx.lineTo(chartCanvas.width, chartCanvas.height);
+      // Vertical axis
+      chartCtx.moveTo(0, 0);
+      chartCtx.lineTo(0, chartCanvas.height);
+      chartCtx.stroke();
+    }
+
+    // Event Listeners
+    angleSlider.addEventListener('input', () => {
+      angleDeg = parseInt(angleSlider.value);
+      angleValue.textContent = angleDeg;
+      reset();
+      updateFormula();
+    });
+
+    wavelengthSlider.addEventListener('input', () => {
+      wavelengthPm = parseInt(wavelengthSlider.value);
+      wavelengthValue.textContent = wavelengthPm;
+      reset();
+      updateFormula();
+    });
+
+    targetSelect.addEventListener('change', () => {
+      targetMass = targetSelect.value === "electron" ? me : mp;
+      reset();
+      updateFormula();
+    });
+
+    // Init
+    updateFormula();
+    drawScene();
+    drawGraph();
+
+    // Update graph periodically to reflect mass changes
+    setInterval(drawGraph, 1000);
+
+  </script>
+</body>
+</html>
