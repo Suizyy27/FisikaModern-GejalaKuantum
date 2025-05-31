@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Latihan Soal Gejala Kuantum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; background: #f2f2f2; padding: 20px; }
+    .soal { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
+    button { padding: 8px 15px; margin-top: 10px; }
+    .feedback { margin-top: 10px; }
+    .benar { color: green; }
+    .salah { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Latihan Soal Gejala Kuantum</h1>
+  <p><strong>Level 1: Mudah</strong></p>
+
+  <div class="soal" id="soal1">
+    <p>1. Siapakah ilmuwan yang mengusulkan bahwa energi radiasi bersifat kuantum?</p>
+    <button onclick="jawab(1, 'a')">a. Albert Einstein</button><br>
+    <button onclick="jawab(1, 'b')">b. Max Planck</button><br>
+    <button onclick="jawab(1, 'c')">c. Niels Bohr</button><br>
+    <div class="feedback" id="feedback1"></div>
+  </div>
+
+  <p><strong>Level 2: Sedang</strong></p>
+
+  <div class="soal" id="soal2">
+    <p>2. Dalam efek fotolistrik, energi foton yang lebih besar dari fungsi kerja akan menyebabkan...</p>
+    <button onclick="jawab(2, 'a')">a. Terbentuknya neutron</button><br>
+    <button onclick="jawab(2, 'b')">b. Elektron keluar dengan energi kinetik</button><br>
+    <button onclick="jawab(2, 'c')">c. Foton terpantul kembali</button><br>
+    <div class="feedback" id="feedback2"></div>
+  </div>
+
+  <p><strong>Level 3: Sulit</strong></p>
+
+  <div class="soal" id="soal3">
+    <p>3. Jika frekuensi foton dinaikkan, maka menurut persamaan E = hf, yang akan terjadi adalah...</p>
+    <button onclick="jawab(3, 'a')">a. Energi foton bertambah</button><br>
+    <button onclick="jawab(3, 'b')">b. Energi foton menurun</button><br>
+    <button onclick="jawab(3, 'c')">c. Tidak berpengaruh</button><br>
+    <div class="feedback" id="feedback3"></div>
+  </div>
+
+  <h2>Total Skor: <span id="skor">0</span>/3</h2>
+
+<script>
+  let skor = 0;
+  let sudahJawab = [false, false, false];
+
+  function jawab(nomor, jawaban) {
+    if (sudahJawab[nomor - 1]) return;
+
+    const kunci = ['b', 'b', 'a'];
+    const penjelasan = [
+      "✅ Max Planck-lah yang pertama kali mengusulkan kuantisasi energi (1900).",
+      "✅ Elektron akan keluar dengan energi kinetik jika energi foton > fungsi kerja.",
+      "✅ Karena E = hf, saat frekuensi naik, energi foton ikut naik."
+    ];
+
+    let feedback = document.getElementById(`feedback${nomor}`);
+    if (jawaban === kunci[nomor - 1]) {
+      feedback.innerHTML = `<span class='benar'>Benar! ${penjelasan[nomor - 1]}</span>`;
+      skor++;
+      document.getElementById('skor').innerText = skor;
+    } else {
+      feedback.innerHTML = `<span class='salah'>Salah. ${penjelasan[nomor - 1]}</span>`;
+    }
+    sudahJawab[nomor - 1] = true;
+  }
+</script>
+</body>
+</html>
+<p><a href="index.html">⬅ Kembali ke Halaman Utama</a></p>

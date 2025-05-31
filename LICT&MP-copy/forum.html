@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Forum Diskusi - Gejala Kuantum</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: #f9f9f9;
+      font-family: Arial, sans-serif;
+    }
+    main {
+      max-width: 700px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px #ccc;
+    }
+    h1 {
+      text-align: center;
+    }
+    form textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+    form button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    form button:hover {
+      background-color: #005fa3;
+    }
+    .comments {
+      margin-top: 20px;
+    }
+    .comment {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .comment p {
+      margin: 0;
+    }
+    .comment time {
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Forum Diskusi: Gejala Kuantum</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="materi.html">Materi</a></li>
+        <li><a href="kuis.html">Kuis</a></li>
+        <li><a href="latihan.html">Latihan</a></li>
+        <li><a href="dragdrop.html">Drag & Drop</a></li>
+        <li><a href="game.html">Game</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <form id="commentForm">
+      <label for="commentText">Tulis komentar atau pertanyaan kamu:</label>
+      <textarea id="commentText" required placeholder="Ketik sesuatu..."></textarea>
+      <button type="submit">Kirim</button>
+    </form>
+
+    <section class="comments" id="commentsSection">
+      <!-- Komentar muncul di sini -->
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 | Fisika Modern - Pembelajaran Interaktif</p>
+  </footer>
+
+  <script>
+    const form = document.getElementById('commentForm');
+    const commentsSection = document.getElementById('commentsSection');
+
+    // Fungsi tampilkan komentar
+    function tampilkanKomentar() {
+      commentsSection.innerHTML = '';
+      const comments = JSON.parse(localStorage.getItem('comments')) || [];
+      comments.forEach(cmt => {
+        const div = document.createElement('div');
+        div.classList.add('comment');
+        div.innerHTML = `<p>${cmt.text}</p><time>${new Date(cmt.time).toLocaleString()}</time>`;
+        commentsSection.appendChild(div);
+      });
+    }
+
+    // Saat submit form
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const teks = document.getElementById('commentText').value.trim();
+      if (teks.length === 0) return;
+
+      const comments = JSON.parse(localStorage.getItem('comments')) || [];
+      comments.push({ text: teks, time: Date.now() });
+      localStorage.setItem('comments', JSON.stringify(comments));
+      form.reset();
+      tampilkanKomentar();
+    });
+
+    // Tampilkan komentar saat halaman dimuat
+    window.onload = tampilkanKomentar;
+  </script>
+</body>
+</html>

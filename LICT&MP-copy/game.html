@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Edukasi - Gejala Kuantum</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .game-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #ccc;
+      margin-top: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #007acc;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Game Edukasi: Tebak Istilah!</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="materi.html">Materi</a></li>
+        <li><a href="kuis.html">Kuis</a></li>
+        <li><a href="latihan.html">Latihan</a></li>
+        <li><a href="dragdrop.html">Drag & Drop</a></li>
+        <li><a href="forum.html">Forum</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="game-box">
+      <p id="pertanyaan">...</p>
+      <input type="text" id="jawaban" placeholder="Tulis jawaban di sini..." />
+      <br />
+      <button onclick="cekJawaban()">Cek</button>
+      <button onclick="soalBaru()">Soal Baru</button>
+      <div class="result" id="hasil"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 | Fisika Modern - Pembelajaran Interaktif</p>
+  </footer>
+
+  <script>
+    const soal = [
+      { tanya: "Partikel cahaya yang membawa energi.", jawab: "foton" },
+      { tanya: "Radiasi elektromagnetik dengan panjang gelombang sangat pendek, digunakan dalam medis.", jawab: "sinar-x" },
+      { tanya: "Peristiwa keluarnya elektron karena cahaya.", jawab: "efek fotolistrik" },
+      { tanya: "Energi cahaya: E = h · f", jawab: "teori kuantum planck" },
+      { tanya: "Percobaan yang menunjukkan cahaya sebagai partikel dan gelombang.", jawab: "dualisme partikel gelombang" }
+    ];
+
+    let index = 0;
+
+    function soalBaru() {
+      index = Math.floor(Math.random() * soal.length);
+      document.getElementById("pertanyaan").innerText = soal[index].tanya;
+      document.getElementById("jawaban").value = "";
+      document.getElementById("hasil").innerText = "";
+    }
+
+    function cekJawaban() {
+      const j = document.getElementById("jawaban").value.trim().toLowerCase();
+      const benar = soal[index].jawab.toLowerCase();
+      const hasil = document.getElementById("hasil");
+      if (j === benar) {
+        hasil.innerText = "Benar! 🎉";
+        hasil.style.color = "green";
+      } else {
+        hasil.innerText = `Salah. Jawaban benar: ${benar}`;
+        hasil.style.color = "red";
+      }
+    }
+
+    window.onload = soalBaru;
+  </script>
+</body>
+</html>

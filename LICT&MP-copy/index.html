@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fisika Modern - Gejala Kuantum</title>
+  <meta name="description" content="Belajar Fisika Modern kelas 12 dengan simulasi interaktif, kuis, dan materi lengkap seperti efek fotolistrik, sinar-X, dan dualisme partikel-gelombang.">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <style>
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Canvas Background Partikel -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Tombol Dark Mode -->
+  <button id="darkToggle" aria-label="Toggle mode gelap atau terang" style="position: absolute; top: 10px; right: 10px;">🌙 Mode Gelap</button>
+
+  <!-- Header Navigasi -->
+  <header>
+    <h1>Fisika Modern: Gejala Kuantum</h1>
+    <nav>
+      <ul>
+        <li><a href="materi.html">Materi</a></li>
+        <li><a href="kuis.html">Kuis</a></li>
+        <li><a href="latihan.html">Latihan</a></li>
+        <li><a href="dragdrop.html">Drag & Drop</a></li>
+        <li><a href="game.html">Game Edukasi</a></li>
+        <li><a href="forum.html">Forum</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="hero-image reveal left">
+      <img src="assets/modern_physics.svg" alt="Ilustrasi Fisika Modern" style="max-width: 300px;">
+    </div>
+    <div class="hero-content reveal right">
+      <h2>Selamat datang di Dunia Fisika Modern!</h2>
+      <p>Website ini dirancang untuk membantu siswa SMA kelas 12 memahami konsep Gejala Kuantum. Pelajari fenomena aneh dan menakjubkan seperti efek fotolistrik, sinar-X, dan partikel yang bisa menjadi gelombang!</p>
+      <a href="#fitur" class="btn-eksplor">Eksplor Materi</a>
+    </div>
+  </div>
+
+  <!-- Fitur Materi dan Interaktif -->
+  <section id="fitur">
+    <h3>🔍 Materi Fisika Modern</h3>
+    <div class="card-container">
+      <div class="card">🌌 Radiasi Benda Hitam</div>
+      <div class="card">📈 Hukum Pergeseran Wien</div>
+      <div class="card">🔬 Teori Kuantum Planck</div>
+      <div class="card">⚡ Efek Fotolistrik</div>
+    </div>
+    <div class="card-container">
+      <div class="card">📡 Efek Compton</div>
+      <div class="card">🌊 Dualisme Partikel-Gelombang</div>
+      <div class="card">🩻 Sinar-X</div>
+      <div class="card">🚀 Penerapan Fisika Modern</div>
+    </div>
+
+    <h3>🧩 Fitur Interaktif</h3>
+    <div class="card-container">
+      <div class="card">📝 Kuis Pilihan Ganda</div>
+      <div class="card">📚 Latihan Soal Otomatis</div>
+      <div class="card">🎯 Drag & Drop Konsep</div>
+    </div>
+    <div class="card-container">
+      <div class="card">🎮 Game Edukasi Mini</div>
+      <div class="card">💬 Forum Diskusi</div>
+      <div class="card">🧪 Simulasi Interaktif</div>
+    </div>
+  </section>
+
+  <!-- Call To Action -->
+  <section class="cta">
+    <div class="cta-box">
+      <h2>Siap Masuk Dunia Kuantum?</h2>
+      <p>Mulai dari materi dasar hingga simulasi yang bikin nagih belajar!</p>
+      <a href="#fitur" class="btn-cta">📚 Ayo Belajar Sekarang</a>
+    </div>
+  </section>
+
+  <!-- Kutipan Fisika -->
+  <section class="quote">
+    <blockquote>
+      “If you think you understand quantum mechanics, you don't understand quantum mechanics.”<br />
+      <span>- Richard Feynman</span>
+    </blockquote>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Pembelajaran Interaktif Fisika Modern</p>
+  </footer>
+
+  <!-- Script Dark Mode -->
+  <script>
+    const darkToggle = document.getElementById("darkToggle");
+    const isDark = localStorage.getItem("darkMode") === "true";
+
+    function setDarkMode(on) {
+      document.body.classList.toggle("dark", on);
+      document.querySelector("header")?.classList.toggle("dark", on);
+      document.querySelector("footer")?.classList.toggle("dark", on);
+      document.querySelector("nav")?.classList.toggle("dark", on);
+      document.querySelectorAll("a").forEach(a => a.classList.toggle("dark", on));
+      document.querySelectorAll("button").forEach(b => b.classList.toggle("dark", on));
+      document.querySelectorAll("input, textarea").forEach(el => el.classList.toggle("dark", on));
+      localStorage.setItem("darkMode", on);
+      darkToggle.textContent = on ? "☀️ Mode Terang" : "🌙 Mode Gelap";
+    }
+
+    darkToggle.addEventListener("click", () => {
+      setDarkMode(!document.body.classList.contains("dark"));
+    });
+
+    setDarkMode(isDark);
+  </script>
+
+  <!-- Script Reveal Scroll -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card, section h2, .quote, .reveal').forEach(el => {
+      el.classList.add('animate-on-scroll');
+      observer.observe(el);
+    });
+  </script>
+
+  <!-- Script Partikel Bergerak -->
+  <script>
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, particles = [];
+
+    function initParticles() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 1.8 + 0.8,
+          speedX: (Math.random() - 0.5) * 0.5,
+          speedY: (Math.random() - 0.5) * 0.5,
+          colorHue: Math.floor(Math.random() * 360)
+        });
+      }
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 4);
+        const isDark = document.body.classList.contains("dark");
+        gradient.addColorStop(0, `hsla(${p.colorHue}, 80%, ${isDark ? "70%" : "30%"}, 0.5)`);
+        gradient.addColorStop(1, `hsla(${p.colorHue}, 80%, ${isDark ? "20%" : "90%"}, 0)`);
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = `hsla(${p.colorHue}, 80%, 70%, 0.3)`;
+        ctx.shadowBlur = 10;
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.x < 0 || p.x > width) p.speedX *= -1;
+        if (p.y < 0 || p.y > height) p.speedY *= -1;
+      });
+      requestAnimationFrame(drawParticles);
+    }
+
+    window.addEventListener('resize', initParticles);
+    initParticles();
+    drawParticles();
+  </script>
+</body>
+</html>

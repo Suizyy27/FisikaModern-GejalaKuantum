@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Gejala Kuantum</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .question {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+    }
+
+    .question h3 {
+      margin: 0 0 10px;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      border: none;
+      background-color: #007acc;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Kuis: Gejala Kuantum</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="materi.html">Materi</a></li>
+        <li><a href="latihan.html">Latihan</a></li>
+        <li><a href="dragdrop.html">Drag & Drop</a></li>
+        <li><a href="game.html">Game</a></li>
+        <li><a href="forum.html">Forum</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="question" id="q1">
+      <h3>1. Apa penyebab utama efek fotolistrik terjadi?</h3>
+      <label><input type="radio" name="q1" value="a" /> Cahaya intensitas tinggi</label><br />
+      <label><input type="radio" name="q1" value="b" /> Frekuensi cahaya yang cukup</label><br />
+      <label><input type="radio" name="q1" value="c" /> Tekanan udara tinggi</label><br />
+    </section>
+
+    <section class="question" id="q2">
+      <h3>2. Rumus energi foton menurut Planck adalah...</h3>
+      <label><input type="radio" name="q2" value="a" /> E = m · c²</label><br />
+      <label><input type="radio" name="q2" value="b" /> E = h · f</label><br />
+      <label><input type="radio" name="q2" value="c" /> E = q · V</label><br />
+    </section>
+
+    <button onclick="cekJawaban()">Cek Jawaban</button>
+
+    <div class="result" id="hasil"></div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 | Fisika Modern - Pembelajaran Interaktif</p>
+  </footer>
+
+  <script>
+    function cekJawaban() {
+      let skor = 0;
+
+      const jawaban = {
+        q1: "b",
+        q2: "b"
+      };
+
+      for (let kunci in jawaban) {
+        const pilihan = document.querySelector(`input[name="${kunci}"]:checked`);
+        if (pilihan && pilihan.value === jawaban[kunci]) {
+          skor++;
+        }
+      }
+
+      const hasil = document.getElementById("hasil");
+      hasil.innerHTML = `Skor kamu: ${skor} dari 2 soal`;
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis Efek Fotolistrik Berbasis Video</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f8fa; padding: 20px; }
+    .box { background: white; padding: 20px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
+    h2 { margin-top: 0; }
+    iframe, video { width: 100%; border-radius: 8px; margin-bottom: 10px; }
+    .feedback { margin-top: 10px; }
+    button { margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>🎥 Kuis Efek Fotolistrik Berbasis Video</h1>
+
+  <div class="box">
+    <h2>1. Tonton Video Singkat</h2>
+    <iframe src="https://www.youtube.com/embed/XU8nSn5Ezd8" title="Efek Fotolistrik" frameborder="0" allowfullscreen></iframe>
+    <p>Perhatikan bagaimana energi cahaya mempengaruhi jumlah dan energi elektron yang keluar dari permukaan logam.</p>
+  </div>
+
+  <div class="box">
+    <h2>2. Jawab Pertanyaan</h2>
+    <p><strong>Pertanyaan:</strong> Mengapa elektron tidak keluar saat logam disinari cahaya merah meskipun intensitasnya tinggi?</p>
+    <button onclick="jawab(true)">Karena frekuensi cahaya merah terlalu rendah untuk melepaskan elektron</button><br>
+    <button onclick="jawab(false)">Karena intensitas bukan faktor utama yang memengaruhi efek fotolistrik</button>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <script>
+    function jawab(benar) {
+      const f = document.getElementById('feedback');
+      if (benar) {
+        f.innerHTML = "<span style='color:green'>✅ Benar! Frekuensi menentukan energi foton. Jika terlalu rendah, foton tidak cukup kuat untuk melepaskan elektron.</span>";
+      } else {
+        f.innerHTML = "<span style='color:red'>❌ Salah. Frekuensi (bukan intensitas) yang menentukan energi foton pada efek fotolistrik.</span>";
+      }
+    }
+  </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis Video Gejala Kuantum</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #eef3f7; padding: 20px; }
+    .box { background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 0 6px rgba(0,0,0,0.1); }
+    h2 { margin-top: 0; }
+    iframe { width: 100%; border-radius: 8px; margin-bottom: 15px; }
+    button { margin: 5px 0; }
+    .feedback { margin-top: 10px; font-weight: bold; }
+    .hasil { font-size: 1.2em; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>🎥 Kuis Interaktif: Gejala Kuantum</h1>
+
+  <!-- Soal 1: Efek Compton -->
+  <div class="box">
+    <h2>1. Video: Efek Compton</h2>
+    <iframe src="https://www.youtube.com/embed/MUe5BqEWeHM" title="Efek Compton" frameborder="0" allowfullscreen></iframe>
+    <p><strong>Pertanyaan:</strong> Apa yang terjadi pada panjang gelombang foton setelah tumbukan dalam Efek Compton?</p>
+    <button onclick="jawab(0, true)">Panjang gelombang bertambah karena kehilangan energi</button><br>
+    <button onclick="jawab(0, false)">Panjang gelombang tetap karena energi tidak berubah</button>
+    <div class="feedback" id="feedback0"></div>
+  </div>
+
+  <!-- Soal 2: Sinar-X -->
+  <div class="box">
+    <h2>2. Video: Sinar-X</h2>
+    <iframe src="https://www.youtube.com/embed/T3JzcCviNDs" title="Sinar X" frameborder="0" allowfullscreen></iframe>
+    <p><strong>Pertanyaan:</strong> Apa yang menyebabkan munculnya spektrum karakteristik pada sinar-X?</p>
+    <button onclick="jawab(1, true)">Transisi elektron antar kulit atom target</button><br>
+    <button onclick="jawab(1, false)">Percepatan elektron di tabung vakum</button>
+    <div class="feedback" id="feedback1"></div>
+  </div>
+
+  <!-- Soal 3: Dualisme -->
+  <div class="box">
+    <h2>3. Video: Dualisme Partikel-Gelombang</h2>
+    <iframe src="https://www.youtube.com/embed/IOYyCHGWJq4" title="Dualisme Partikel Gelombang" frameborder="0" allowfullscreen></iframe>
+    <p><strong>Pertanyaan:</strong> Dalam eksperimen celah ganda, mengapa muncul pola interferensi saat partikel dikirim satu per satu?</p>
+    <button onclick="jawab(2, true)">Karena partikel berperilaku seperti gelombang dan saling interferensi</button><br>
+    <button onclick="jawab(2, false)">Karena elektron saling bertabrakan membentuk pola</button>
+    <div class="feedback" id="feedback2"></div>
+  </div>
+
+  <!-- Skor -->
+  <div class="box hasil" id="hasilSkor" style="display:none;"></div>
+
+  <script>
+    const feedbacks = [
+      {
+        benar: "✅ Benar! Foton kehilangan energi saat tumbukan, sehingga panjang gelombangnya bertambah.",
+        salah: "❌ Salah. Foton justru kehilangan energi → panjang gelombang bertambah."
+      },
+      {
+        benar: "✅ Betul! Spektrum karakteristik muncul akibat transisi elektron antar kulit atom logam target.",
+        salah: "❌ Kurang tepat. Percepatan menghasilkan spektrum kontinu, bukan karakteristik."
+      },
+      {
+        benar: "✅ Tepat! Partikel menunjukkan sifat gelombang dan membentuk interferensi.",
+        salah: "❌ Salah. Pola bukan karena tabrakan, tapi interferensi gelombang probabilitas."
+      }
+    ];
+
+    let skor = 0;
+    let dijawab = [false, false, false];
+
+    function jawab(no, benar) {
+      if (dijawab[no]) return; // satu kali jawab
+      dijawab[no] = true;
+      if (benar) skor++;
+
+      const el = document.getElementById("feedback" + no);
+      el.innerHTML = benar ? 
+        `<span style='color:green'>${feedbacks[no].benar}</span>` : 
+        `<span style='color:red'>${feedbacks[no].salah}</span>`;
+
+      if (dijawab.every(val => val)) tampilSkor();
+    }
+
+    function tampilSkor() {
+      const h = document.getElementById("hasilSkor");
+      h.style.display = "block";
+      h.innerHTML = `<strong>Skor Akhir:</strong> ${skor}/3<br><br>` +
+        (skor === 3 ? "🎉 Luar biasa, kamu menguasai materi gejala kuantum!" :
+        skor === 2 ? "👍 Bagus! Masih ada yang bisa kamu perbaiki." :
+        "💡 Yuk ulangi lagi untuk memahami lebih dalam.");
+    }
+  </script>

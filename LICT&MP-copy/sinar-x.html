@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulasi Sinar-X</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      background: #000;
+      display: block;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #0ff;
+    }
+    button, select, input[type=range] {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+    }
+    #infoBox {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulasi Pembentukan Sinar-X</h1>
+
+  <label for="voltage">Tegangan (kV):</label>
+  <input type="range" id="voltage" min="20" max="150" value="60" oninput="updateVoltage(this.value)">
+  <span id="voltageValue">60</span> kV
+
+  <br>
+
+  <label for="target">Target Anoda:</label>
+  <select id="target" onchange="updateTarget(this.value)">
+    <option value="W">Tungsten (W)</option>
+    <option value="Cu">Tembaga (Cu)</option>
+    <option value="Mo">Molibdenum (Mo)</option>
+  </select>
+
+  <br>
+
+  <canvas id="canvas" width="800" height="400"></canvas>
+  <div>
+    <button onclick="startSim()">▶️ Mulai</button>
+    <button onclick="resetSim()">🔄 Reset</button>
+  </div>
+
+  <canvas id="spectrum" width="800" height="200"></canvas>
+  <div id="infoBox"></div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const ctx2 = document.getElementById('spectrum').getContext('2d');
+
+    let electrons = [], showFlash = false, running = false;
+    let voltage = 60, targetMaterial = 'W';
+
+    function drawSetup() {
+      ctx.fillStyle = '#333';
+      ctx.fillRect(50, 150, 700, 100);
+      ctx.fillStyle = '#0f0';
+      ctx.fillRect(70, 175, 10, 50);
+      ctx.fillText("Katoda", 60, 170);
+      ctx.fillStyle = '#f00';
+      ctx.fillRect(700, 160, 10, 80);
+      ctx.fillText("Anoda (" + targetMaterial + ")", 660, 155);
+    }
+
+    function spawnElectron() {
+      electrons.push({ x: 80, y: 200, vx: 2 + voltage / 30 });
+    }
+
+    function drawElectrons() {
+      ctx.fillStyle = '#0ff';
+      for (let e of electrons) {
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function updateElectrons() {
+      for (let e of electrons) {
+        e.x += e.vx;
+        if (e.x >= 700) {
+          showFlash = true;
+          setTimeout(() => { showFlash = false; }, 100);
+          emitXRay(e.x, e.y);
+          playSound();
+          updateInfo(`Elektron menabrak anoda ${targetMaterial}, memancarkan sinar-X dengan energi maksimum ${voltage} keV`);
+          electrons = electrons.filter(el => el !== e);
+          drawSpectrum();
+        }
+      }
+    }
+
+    function emitXRay(x, y) {
+      ctx.strokeStyle = 'rgba(255,255,0,0.6)';
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 30 + Math.random() * 100, y - 50 + Math.random() * 100);
+        ctx.stroke();
+      }
+    }
+
+    const xraySound = new Audio("https://www.soundjay.com/button/beep-07.wav");
+
+    function playSound() {
+      xraySound.currentTime = 0;
+      xraySound.play();
+    }
+
+    function resetSim() {
+      electrons = [];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawSetup();
+      drawSpectrum();
+      updateInfo('');
+    }
+
+    function loop() {
+      if (!running) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawSetup();
+      if (Math.random() < 0.1) spawnElectron();
+      updateElectrons();
+      drawElectrons();
+      if (showFlash) {
+        ctx.fillStyle = 'rgba(255,255,0,0.3)';
+        ctx.fillRect(680, 140, 50, 100);
+      }
+      requestAnimationFrame(loop);
+    }
+
+    function startSim() {
+      running = true;
+      loop();
+    }
+
+    function updateVoltage(val) {
+      voltage = parseInt(val);
+      document.getElementById("voltageValue").textContent = val;
+      drawSpectrum();
+    }
+
+    function updateTarget(val) {
+      targetMaterial = val;
+      drawSpectrum();
+    }
+
+    function drawSpectrum() {
+      ctx2.clearRect(0, 0, 800, 200);
+      ctx2.strokeStyle = '#fff';
+      ctx2.beginPath();
+      ctx2.moveTo(50, 180);
+      ctx2.lineTo(780, 180);
+      ctx2.stroke();
+
+      ctx2.fillStyle = '#0ff';
+      const cutoff = 1240 / voltage;
+      const baseX = 50, baseY = 180;
+      for (let i = 0; i < 700; i++) {
+        const λ = i + 1;
+        const intensity = Math.max(0, Math.sin((λ - cutoff) * 0.02) * 50);
+        ctx2.fillRect(baseX + i, baseY - intensity, 1, intensity);
+      }
+
+      ctx2.strokeStyle = '#f0f';
+      ctx2.beginPath();
+      const peaks = {
+        W: [59, 67],
+        Cu: [8, 8.9],
+        Mo: [17.5, 19.6]
+      }[targetMaterial];
+      for (let λ of peaks) {
+        let x = baseX + λ * 10;
+        ctx2.moveTo(x, baseY);
+        ctx2.lineTo(x, baseY - 70);
+      }
+      ctx2.stroke();
+    }
+
+    function updateInfo(text) {
+      document.getElementById('infoBox').innerText = text;
+    }
+
+    resetSim();
+  </script>
+</body>
+</html>
